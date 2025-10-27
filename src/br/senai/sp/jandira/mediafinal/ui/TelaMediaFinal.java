@@ -3,17 +3,27 @@ package br.senai.sp.jandira.mediafinal.ui;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.Optional;
+
 public class TelaMediaFinal extends Application {
 
     VBox painelResultado;
+    TextField tfNomeAluno;
+    TextField tfNome1;
+    TextField tfNome2;
+    TextField tfNome3;
+    TextField tfNome4;
+    Label lblNome;
+    Label lblNota1 ;
+    Label lblNota2;
+    Label lblNota3;
+    Label lblNota4;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -41,16 +51,16 @@ public class TelaMediaFinal extends Application {
         //formulario
         VBox painelFormulario = new VBox();
         painelFormulario.setPadding(new Insets(10, 20, 10, 10));
-        Label lblNome = new Label("Nome do aluno");
-        Label lblNota1 = new Label("Nota 1");
-        Label lblNota2 = new Label("Nota 2");
-        Label lblNota3 = new Label("Nota 3");
-        Label lblNota4 = new Label("Nota 4");
-        TextField tfNomeAluno = new TextField();
-        TextField tfNome1 = new TextField();
-        TextField tfNome2 = new TextField();
-        TextField tfNome3 = new TextField();
-        TextField tfNome4 = new TextField();
+         lblNome = new Label("Nome do aluno");
+         lblNota1 = new Label("Nota 1");
+         lblNota2 = new Label("Nota 2");
+         lblNota3 = new Label("Nota 3");
+         lblNota4 = new Label("Nota 4");
+         tfNomeAluno = new TextField();
+         tfNome1 = new TextField();
+         tfNome2 = new TextField();
+         tfNome3 = new TextField();
+         tfNome4 = new TextField();
 
         painelFormulario.getChildren().addAll(
                 lblNome,tfNomeAluno,
@@ -119,22 +129,27 @@ public class TelaMediaFinal extends Application {
 
         //intersepitar cliques nos baotoes
         btCaucularMedia.setOnAction(e -> {
-            String NomeAluno = tfNomeAluno.getText();
-            lblNomeResultado.setText("Nome do aluno: " + NomeAluno);
-            System.out.println("NomeAluno: " + NomeAluno);
+            if(ValidarEntrada()){
 
-            String Nota1 = tfNome1.getText();
-            String Nota2 = tfNome2.getText();
-            String Nota3 = tfNome3.getText();
-            String Nota4 = tfNome4.getText();
+                String NomeAluno = tfNomeAluno.getText();
+                lblNomeResultado.setText("Nome do aluno: " + NomeAluno);
+                System.out.println("NomeAluno: " + NomeAluno);
 
-            double media = calcularMedia(Nota1, Nota2, Nota3, Nota4);
-            lblMedia.setText("Media final: " + media);
+                String Nota1 = tfNome1.getText();
+                String Nota2 = tfNome2.getText();
+                String Nota3 = tfNome3.getText();
+                String Nota4 = tfNome4.getText();
 
-            String situacao = DefinirCituacao(media);
-            String mediaFormatada = String.format("%.2f", media);
-            lblsituacao.setText("Situação: " + mediaFormatada);
+                double media = calcularMedia(Nota1, Nota2, Nota3, Nota4);
+                lblMedia.setText("Media final: " + media);
+
+                String situacao = DefinirCituacao(media);
+                String mediaFormatada = String.format("%.2f", media);
+                lblsituacao.setText("Situação: " + mediaFormatada);
+            }
         });
+
+
 
         btLimpar.setOnAction(e -> {
             tfNomeAluno.setText("");
@@ -148,6 +163,15 @@ public class TelaMediaFinal extends Application {
             painelResultado.setStyle("-fx-background-color: #1a58c9");
         });
 
+        btSair.setOnAction(e -> {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Sair do programa?", ButtonType.YES, ButtonType.NO);
+         Optional<ButtonType> resposta = alert.showAndWait();
+
+        if (resposta.get() == ButtonType.YES) {
+            System.exit(0);
+        }
+        });
+
     }
 
     private double calcularMedia(String n1, String n2, String n3, String n4) {
@@ -159,6 +183,8 @@ public class TelaMediaFinal extends Application {
         return media;
     }
 
+
+
     private String DefinirCituacao(double media) {
         if (media < 4) {
             painelResultado.setStyle("-fx-background-color: #d91010");
@@ -166,11 +192,40 @@ public class TelaMediaFinal extends Application {
         } else if (media >= 6) {
             painelResultado.setStyle("-fx-background-color: #1ac929");
             return "Aprovado";
-        }else {
+        } else {
             painelResultado.setStyle("-fx-background-color: #d6540d");
-         return "Recuperação";
+            return "Recuperação";
         }
 
+    }
+    private  boolean ValidarEntrada(){
+        if (tfNomeAluno.getText().isEmpty()){
+            MostrarMensagem(Alert.AlertType.ERROR, "preencha o nome do aluno!");
+            tfNomeAluno.requestFocus();
+            return false;
+        }else if(lblNota1.getText().isEmpty()){
+            MostrarMensagem(Alert.AlertType.ERROR, "preencha nota1 do aluno!");
+            lblNota1.requestFocus();
+            return false;
+        }else if (lblNota2.getText().isEmpty()){
+            MostrarMensagem(Alert.AlertType.ERROR, "preencha nota2 do aluno!");
+            lblNota2.requestFocus();
+            return false;
+        }else if (lblNota3.getText().isEmpty()){
+            MostrarMensagem(Alert.AlertType.ERROR, "preencha nota3 do aluno!");
+            lblNota3.requestFocus();
+            return false;
+        } else if (lblNota4.getText().isEmpty()) {
+            MostrarMensagem(Alert.AlertType.ERROR, "preencha nota4 do aluno!");
+            lblNota4.requestFocus();
+            return false;
+        }
+        return true;
+    }
+
+    private void MostrarMensagem(Alert.AlertType tipo, String mensagem){
+        Alert alert = new Alert(tipo, mensagem);
+        alert.showAndWait();
     }
 
 }
