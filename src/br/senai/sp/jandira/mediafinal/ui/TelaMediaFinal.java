@@ -13,11 +13,13 @@ import javafx.stage.Stage;
 
 public class TelaMediaFinal extends Application {
 
+    VBox painelResultado;
 
     @Override
     public void start(Stage stage) throws Exception {
+       //comfiguração da tela
         stage.setWidth(600);
-        stage.setHeight(400);
+        stage.setHeight(500);
         stage.setResizable(false);
         stage.setTitle("Media do aluno");
 
@@ -30,6 +32,8 @@ public class TelaMediaFinal extends Application {
         titulo.setStyle("-fx-font-size: 22; -fx-text-fill:white");
         titulo.setPadding(new Insets(10, 0, 10, 10));
 
+
+        //painel superior
         HBox painelSuperior = new HBox();
         painelSuperior.getChildren().addAll(titulo);
         painelSuperior.setStyle("-fx-background-color: #1a58c9");
@@ -77,17 +81,22 @@ public class TelaMediaFinal extends Application {
          );
 
          //Resultado
-         VBox painelResultado = new VBox();
-        painelResultado.setStyle("-fx-background-color: #386dcf");
-         Label lblResultado = new Label("Resultado");
-         Label lblNomeResultado = new Label("Nome");
-         Label lblMedia = new Label("Media");
-         Label lblsitua = new Label("Situação");
+         painelResultado = new VBox();
+         painelResultado.setPadding(new Insets(10, 20, 10, 10));
+         painelResultado.setStyle("-fx-background-color: #386dcf");
+         Label lblResultado = new Label("Resultado: ");
+         lblResultado.setStyle("-fx-font-size: 22; -fx-text-fill:white; fx-font-weight: bold");
+         Label lblNomeResultado = new Label("Nome do aluno: ");
+         lblNomeResultado.setStyle("-fx-text-fill:white");
+         Label lblMedia = new Label("Media final:");
+         lblMedia.setStyle("-fx-text-fill:white");
+         Label lblsituacao = new Label("Situação: ");
+         lblsituacao.setStyle("-fx-text-fill:white");
          painelResultado.getChildren().addAll(
                  lblResultado,
                  lblNomeResultado,
                  lblMedia,
-                 lblsitua
+                 lblsituacao
          );
 
 
@@ -107,5 +116,61 @@ public class TelaMediaFinal extends Application {
 
 
         stage.show();
+
+        //intersepitar cliques nos baotoes
+        btCaucularMedia.setOnAction(e -> {
+            String NomeAluno = tfNomeAluno.getText();
+            lblNomeResultado.setText("Nome do aluno: " + NomeAluno);
+            System.out.println("NomeAluno: " + NomeAluno);
+
+            String Nota1 = tfNome1.getText();
+            String Nota2 = tfNome2.getText();
+            String Nota3 = tfNome3.getText();
+            String Nota4 = tfNome4.getText();
+
+            double media = calcularMedia(Nota1, Nota2, Nota3, Nota4);
+            lblMedia.setText("Media final: " + media);
+
+            String situacao = DefinirCituacao(media);
+            String mediaFormatada = String.format("%.2f", media);
+            lblsituacao.setText("Situação: " + mediaFormatada);
+        });
+
+        btLimpar.setOnAction(e -> {
+            tfNomeAluno.setText("");
+            tfNome1.setText("");
+            tfNome2.setText("");
+            tfNome3.setText("");
+            tfNome4.setText("");
+            lblNomeResultado.setText("Nome do aluno: ");
+            lblMedia.setText("Media final: ");
+            lblsituacao.setText("Situação:");
+            painelResultado.setStyle("-fx-background-color: #1a58c9");
+        });
+
     }
+
+    private double calcularMedia(String n1, String n2, String n3, String n4) {
+        double nota1 = Double.parseDouble(n1);
+        double nota2 = Double.parseDouble(n2);
+        double nota3 = Double.parseDouble(n3);
+        double nota4 = Double.parseDouble(n4);
+        double media = (nota1 + nota2 + nota3 + nota4) / 4;
+        return media;
+    }
+
+    private String DefinirCituacao(double media) {
+        if (media < 4) {
+            painelResultado.setStyle("-fx-background-color: #d91010");
+            return "Reprovado";
+        } else if (media >= 6) {
+            painelResultado.setStyle("-fx-background-color: #1ac929");
+            return "Aprovado";
+        }else {
+            painelResultado.setStyle("-fx-background-color: #d6540d");
+         return "Recuperação";
+        }
+
+    }
+
 }
